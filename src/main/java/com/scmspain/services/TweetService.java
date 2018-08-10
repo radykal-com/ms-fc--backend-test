@@ -29,7 +29,7 @@ public class TweetService {
       Result - recovered Tweet
     */
     public void publishTweet(String publisher, String text) {
-        if (publisher != null && publisher.length() > 0 && text != null && text.length() > 0 && text.length() < 140) {
+        if (publisher != null && publisher.length() > 0 && text != null && text.length() > 0 && text.length() <= 140) {
             Tweet tweet = new Tweet();
             tweet.setTweet(text);
             tweet.setPublisher(publisher);
