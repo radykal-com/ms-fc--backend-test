@@ -1,5 +1,7 @@
 package com.scmspain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +16,15 @@ public class Tweet {
     private String publisher;
     @Column(nullable = false, length = 140)
     private String tweet;
-    @Column (nullable=true)
+    @Column(nullable = true)
     private Long pre2015MigrationStatus = 0L;
+
+    @Column(nullable = false)
+    @JsonIgnore
+    private Boolean discarded;
+    @Column(nullable = true)
+    @JsonIgnore
+    private Date discardedDate;
 
     public Tweet() {
     }
@@ -52,4 +61,19 @@ public class Tweet {
         this.pre2015MigrationStatus = pre2015MigrationStatus;
     }
 
+    public Boolean getDiscarded() {
+        return this.discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+        this.discarded = discarded;
+    }
+
+    public Date getDiscardedDate() {
+        return this.discardedDate;
+    }
+
+    public void setDiscardedDate(Date discardedDate) {
+        this.discardedDate = discardedDate;
+    }
 }

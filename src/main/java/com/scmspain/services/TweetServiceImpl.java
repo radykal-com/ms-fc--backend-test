@@ -1,6 +1,10 @@
 package com.scmspain.services;
 
 import com.scmspain.entities.Tweet;
+import com.scmspain.exception.TweetNotFoundException;
+import com.scmspain.validation.Validator;
+import java.util.Date;
+import javax.validation.ValidationException;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.stereotype.Service;
@@ -14,55 +18,74 @@ import java.util.List;
 @Service
 @Transactional
 public class TweetServiceImpl implements TweetService {
+    private Validator<Tweet> validator;
     private EntityManager entityManager;
     private MetricWriter metricWriter;
 
-    public TweetServiceImpl(EntityManager entityManager, MetricWriter metricWriter) {
+    public TweetServiceImpl(Validator<Tweet> validator, EntityManager entityManager,  MetricWriter metricWriter) {
+        this.validator = validator;
         this.entityManager = entityManager;
         this.metricWriter = metricWriter;
     }
 
-    /**
-      Push tweet to repository
-      Parameter - publisher - creator of the Tweet
-      Parameter - text - Content of the Tweet
-      Result - recovered Tweet
-    */
+    @Override
     public void publishTweet(String publisher, String text) {
-        if (publisher != null && publisher.length() > 0 && text != null && text.length() > 0 && text.length() <= 140) {
-            Tweet tweet = new Tweet();
-            tweet.setTweet(text);
-            tweet.setPublisher(publisher);
-
-            this.metricWriter.increment(new Delta<Number>("published-tweets", 1));
-            this.entityManager.persist(tweet);
-        } else {
-            throw new IllegalArgumentException("Tweet must not be greater than 140 characters");
-        }
+        Tweet tweet = new Tweet();
+        tweet.setTweet(text);
+        tweet.setPublisher(publisher);
+        tweet.setDiscarded(false);
+        validateTweet(tweet);
+        this.metricWriter.increment(new Delta<Number>("published-tweets", 1));
+        this.entityManager.persist(tweet);
     }
 
-    /**
-      Recover tweet from repository
-      Parameter - id - id of the Tweet to retrieve
-      Result - retrieved Tweet
-    */
+    @Override
     public Tweet getTweet(Long id) {
       return this.entityManager.find(Tweet.class, id);
     }
 
-    /**
-      Recover tweet from repository
-      Parameter - id - id of the Tweet to retrieve
-      Result - retrieved Tweet
-    */
+    @Override
     public List<Tweet> listAllTweets() {
         List<Tweet> result = new ArrayList<Tweet>();
         this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
-        TypedQuery<Long> query = this.entityManager.createQuery("SELECT id FROM Tweet AS tweetId WHERE pre2015MigrationStatus<>99 ORDER BY id DESC", Long.class);
+        TypedQuery<Long> query = this.entityManager.createQuery("SELECT id FROM Tweet AS tweetId WHERE pre2015MigrationStatus<>99 AND discarded=false ORDER BY id DESC", Long.class);
         List<Long> ids = query.getResultList();
         for (Long id : ids) {
             result.add(getTweet(id));
         }
         return result;
+    }
+
+    @Override
+    public void discardTweet(Long id) throws TweetNotFoundException {
+        Tweet tweet = getTweet(id);
+        if (tweet == null) {
+            throw new TweetNotFoundException();
+        }
+        if (!tweet.getDiscarded()) {
+          tweet.setDiscarded(true);
+          tweet.setDiscardedDate(new Date());
+          this.entityManager.persist(tweet);
+        }
+    }
+
+    @Override
+    public List<Tweet> listAllDiscardedTweets() {
+        List<Tweet> result = new ArrayList<Tweet>();
+        this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
+        TypedQuery<Long> query = this.entityManager.createQuery("SELECT id FROM Tweet AS tweetId WHERE pre2015MigrationStatus<>99 AND discarded=true ORDER BY discardedDate DESC", Long.class);
+        List<Long> ids = query.getResultList();
+        for (Long id : ids) {
+            result.add(getTweet(id));
+        }
+        return result;
+    }
+
+    private void validateTweet(Tweet tweet) {
+        try {
+            this.validator.validate(tweet);
+        } catch (ValidationException ex) {
+            throw new IllegalArgumentException(ex);
+        }
     }
 }

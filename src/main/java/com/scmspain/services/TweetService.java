@@ -10,4 +10,8 @@ public interface TweetService {
   Tweet getTweet(Long id);
 
   List<Tweet> listAllTweets();
+
+  void discardTweet(Long id);
+
+  List<Tweet> listAllDiscardedTweets();
 }

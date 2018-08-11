@@ -2,11 +2,16 @@ package com.scmspain.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmspain.configuration.TestConfiguration;
+import com.scmspain.entities.Tweet;
+import com.scmspain.exception.TweetNotFoundException;
+import com.scmspain.services.TweetService;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,6 +23,11 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +39,9 @@ public class TweetControllerTest {
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;
+
+    @MockBean
+    private TweetService tweetService;
 
     @Before
     public void setUp() {
@@ -43,12 +56,14 @@ public class TweetControllerTest {
 
     @Test
     public void shouldReturn400WhenInsertingAnInvalidTweet() throws Exception {
-        mockMvc.perform(newTweet("Schibsted Spain", "We are Schibsted Spain (look at our home page http://www.schibsted.es/), we own Vibbo, InfoJobs, fotocasa, coches.net and milanuncios. Welcome!"))
+        doThrow(IllegalArgumentException.class).when(tweetService).publishTweet(any(), any());
+        mockMvc.perform(newTweet("Schibsted Spain", "We are Schibsted Spain (look at our home page http://www.schibsted.es/), we own Vibbo, InfoJobs, fotocasa, habitaclia, coches.net and milanuncios. Welcome!"))
                 .andExpect(status().is(400));
     }
 
     @Test
     public void shouldReturnAllPublishedTweets() throws Exception {
+        when(tweetService.listAllTweets()).thenReturn(Arrays.asList(new Tweet()));
         mockMvc.perform(newTweet("Yo", "How are you?"))
                 .andExpect(status().is(201));
 
@@ -57,13 +72,33 @@ public class TweetControllerTest {
                 .andReturn();
 
         String content = getResult.getResponse().getContentAsString();
+        verify(tweetService, times(1)).listAllTweets();
         assertThat(new ObjectMapper().readValue(content, List.class).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturn204WhenDiscardingATweet() throws Exception {
+        mockMvc.perform(discardTweet())
+            .andExpect(status().is(204));
+    }
+
+    @Test
+    public void shouldReturn404IfDiscardingNonExistantTweet() throws Exception {
+        doThrow(TweetNotFoundException.class).when(tweetService).discardTweet(any());
+        mockMvc.perform(discardTweet())
+            .andExpect(status().is(404));
     }
 
     private MockHttpServletRequestBuilder newTweet(String publisher, String tweet) {
         return post("/tweet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(format("{\"publisher\": \"%s\", \"tweet\": \"%s\"}", publisher, tweet));
+    }
+
+    private MockHttpServletRequestBuilder discardTweet() {
+        return post("/discarded")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\"tweet\": \"1\"}");
     }
 
 }
