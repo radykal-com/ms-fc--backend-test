@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface TweetAdapter {
 
-    Tweet mapFromTweetDto(TweetQueryDto tweetQueryDto);
+    Tweet mapFromTweetQueryDto(TweetQueryDto tweetQueryDto);
 
-    List<Tweet> mapFromTweetDtoList(List<TweetQueryDto> tweetQueryDto);
+    List<Tweet> mapFromTweetQueryDtoList(List<TweetQueryDto> tweetQueryDto);
 
     TweetQueryDto mapFromTweet(Tweet tweet);
 

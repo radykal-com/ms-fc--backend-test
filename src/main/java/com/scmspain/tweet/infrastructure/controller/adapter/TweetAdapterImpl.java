@@ -7,36 +7,32 @@ import java.util.List;
 
 public class TweetAdapterImpl implements TweetAdapter {
     @Override
-    public Tweet mapFromTweetDto(TweetQueryDto tweetDto) {
+    public Tweet mapFromTweetQueryDto(TweetQueryDto tweetQueryDto) {
         Tweet tweet = new Tweet();
-        tweet.setId(tweetDto.getId());
-        tweet.setPublisher(tweetDto.getPublisher());
-        tweet.setContent(tweetDto.getContent());
-        tweet.setPre2015MigrationStatus(tweetDto.getPre2015MigrationStatus());
-        tweet.setDiscarded(tweetDto.getDiscarded());
-        tweet.setDiscardedDate(tweetDto.getDiscardedDate());
+        tweet.setId(tweetQueryDto.getId());
+        tweet.setPublisher(tweetQueryDto.getPublisher());
+        tweet.setContent(tweetQueryDto.getTweet());
+        tweet.setPre2015MigrationStatus(tweetQueryDto.getPre2015MigrationStatus());
         return tweet;
     }
 
     @Override
-    public List<Tweet> mapFromTweetDtoList(List<TweetQueryDto> tweetDtos) {
+    public List<Tweet> mapFromTweetQueryDtoList(List<TweetQueryDto> tweetQueryDtos) {
         List<Tweet> result = new ArrayList<>();
-        for (TweetQueryDto tweetDto : tweetDtos) {
-            result.add(mapFromTweetDto(tweetDto));
+        for (TweetQueryDto tweetQueryDto : tweetQueryDtos) {
+            result.add(mapFromTweetQueryDto(tweetQueryDto));
         }
         return result;
     }
 
     @Override
     public TweetQueryDto mapFromTweet(Tweet tweet) {
-        TweetQueryDto tweetDto = new TweetQueryDto();
-        tweetDto.setId(tweet.getId());
-        tweetDto.setPublisher(tweet.getPublisher());
-        tweetDto.setContent(tweet.getContent());
-        tweetDto.setPre2015MigrationStatus(tweet.getPre2015MigrationStatus());
-        tweetDto.setDiscarded(tweet.getDiscarded());
-        tweetDto.setDiscardedDate(tweet.getDiscardedDate());
-        return tweetDto;
+        TweetQueryDto tweetQueryDto = new TweetQueryDto();
+        tweetQueryDto.setId(tweet.getId());
+        tweetQueryDto.setPublisher(tweet.getPublisher());
+        tweetQueryDto.setTweet(tweet.getContent());
+        tweetQueryDto.setPre2015MigrationStatus(tweet.getPre2015MigrationStatus());
+        return tweetQueryDto;
     }
 
     @Override
