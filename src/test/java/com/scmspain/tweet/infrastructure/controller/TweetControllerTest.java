@@ -2,9 +2,9 @@ package com.scmspain.tweet.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmspain.tweet.infrastructure.configuration.TestConfiguration;
-import com.scmspain.tweet.domain.entities.Tweet;
+import com.scmspain.tweet.domain.model.Tweet;
 import com.scmspain.tweet.domain.exception.TweetNotFoundException;
-import com.scmspain.tweet.domain.services.TweetService;
+import com.scmspain.tweet.domain.service.TweetService;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +63,7 @@ public class TweetControllerTest {
 
     @Test
     public void shouldReturnAllPublishedTweets() throws Exception {
-        when(tweetService.listAllTweets()).thenReturn(Arrays.asList(new Tweet()));
+        when(tweetService.listAllActiveTweets()).thenReturn(Arrays.asList(new Tweet()));
         mockMvc.perform(newTweet("Yo", "How are you?"))
                 .andExpect(status().is(201));
 
@@ -72,7 +72,7 @@ public class TweetControllerTest {
                 .andReturn();
 
         String content = getResult.getResponse().getContentAsString();
-        verify(tweetService, times(1)).listAllTweets();
+        verify(tweetService, times(1)).listAllActiveTweets();
         assertThat(new ObjectMapper().readValue(content, List.class).size()).isEqualTo(1);
     }
 
