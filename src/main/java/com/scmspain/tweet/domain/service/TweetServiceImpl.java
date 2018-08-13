@@ -43,7 +43,7 @@ public class TweetServiceImpl implements TweetService {
     public void discardTweet(Long id) throws TweetNotFoundException {
         Tweet tweet = repository.findById(id);
         if (tweet == null) {
-            throw new TweetNotFoundException();
+            throw new TweetNotFoundException(String.format("Could not find any Tweet with id %s",id));
         }
         if (!tweet.getDiscarded()) {
             tweet.setDiscarded(true);
