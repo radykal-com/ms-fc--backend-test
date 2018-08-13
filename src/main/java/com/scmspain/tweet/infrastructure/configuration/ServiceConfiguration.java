@@ -2,6 +2,8 @@ package com.scmspain.tweet.infrastructure.configuration;
 
 import com.scmspain.tweet.domain.model.Tweet;
 import com.scmspain.tweet.domain.repository.TweetRepository;
+import com.scmspain.tweet.domain.service.TweetMetricsService;
+import com.scmspain.tweet.infrastructure.service.TweetMetricsServiceImpl;
 import com.scmspain.tweet.domain.service.TweetService;
 import com.scmspain.tweet.domain.service.TweetServiceImpl;
 import com.scmspain.tweet.domain.validation.Validator;
@@ -13,7 +15,13 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceConfiguration {
     @Bean
     public TweetService getTweetService(TweetRepository repository, Validator<Tweet> validator,
-        MetricWriter metricWriter) {
-        return new TweetServiceImpl(repository, validator, metricWriter);
+        TweetMetricsService metricsService
+        ) {
+        return new TweetServiceImpl(repository, validator, metricsService);
+    }
+
+    @Bean
+    public TweetMetricsService getTweetMetricsService(MetricWriter metricWriter) {
+        return new TweetMetricsServiceImpl(metricWriter);
     }
 }

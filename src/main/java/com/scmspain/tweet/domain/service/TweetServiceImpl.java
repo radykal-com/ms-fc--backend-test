@@ -7,20 +7,19 @@ import com.scmspain.tweet.domain.validation.Validator;
 import java.util.Date;
 import java.util.List;
 import javax.validation.ValidationException;
-import org.springframework.boot.actuate.metrics.writer.Delta;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TweetServiceImpl implements TweetService {
+
     private TweetRepository repository;
     private Validator<Tweet> validator;
-    private MetricWriter metricWriter;
+    private TweetMetricsService metricsService;
 
-    public TweetServiceImpl(TweetRepository repository, Validator<Tweet> validator,  MetricWriter metricWriter) {
+    public TweetServiceImpl(TweetRepository repository, Validator<Tweet> validator, TweetMetricsService metricsService) {
         this.repository = repository;
         this.validator = validator;
-        this.metricWriter = metricWriter;
+        this.metricsService = metricsService;
     }
 
     @Override
@@ -29,13 +28,13 @@ public class TweetServiceImpl implements TweetService {
         tweet.setPublisher(publisher);
         tweet.setContent(content);
         validateTweet(tweet);
-        this.metricWriter.increment(new Delta<Number>("published-tweets", 1));
+        metricsService.publishedTweets();
         repository.persist(tweet);
     }
 
     @Override
     public List<Tweet> listAllPublishedTweets() {
-        this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
+        metricsService.listPublishedTweets();
         return repository.findAllPublished();
     }
 
@@ -49,12 +48,13 @@ public class TweetServiceImpl implements TweetService {
             tweet.setDiscarded(true);
             tweet.setDiscardedDate(new Date());
             repository.persist(tweet);
+            metricsService.discardedTweets();
         }
     }
 
     @Override
     public List<Tweet> listAllDiscardedTweets() {
-        this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
+        metricsService.listDiscardedTweets();
         return repository.findAllDiscarded();
     }
 
