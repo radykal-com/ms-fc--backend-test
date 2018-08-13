@@ -1,8 +1,8 @@
 package com.scmspain.tweet.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scmspain.tweet.infrastructure.configuration.TestConfiguration;
 import com.scmspain.tweet.domain.model.Tweet;
+import com.scmspain.tweet.infrastructure.configuration.TestConfiguration;
 import com.scmspain.tweet.domain.exception.TweetNotFoundException;
 import com.scmspain.tweet.domain.service.TweetService;
 import java.util.Arrays;
@@ -64,8 +64,6 @@ public class TweetControllerTest {
     @Test
     public void shouldReturnAllPublishedTweets() throws Exception {
         when(tweetService.listAllActiveTweets()).thenReturn(Arrays.asList(new Tweet()));
-        mockMvc.perform(newTweet("Yo", "How are you?"))
-                .andExpect(status().is(201));
 
         MvcResult getResult = mockMvc.perform(get("/tweet"))
                 .andExpect(status().is(200))
@@ -73,6 +71,19 @@ public class TweetControllerTest {
 
         String content = getResult.getResponse().getContentAsString();
         verify(tweetService, times(1)).listAllActiveTweets();
+        assertThat(new ObjectMapper().readValue(content, List.class).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnAllDiscardedTweets() throws Exception {
+        when(tweetService.listAllDiscardedTweets()).thenReturn(Arrays.asList(new Tweet()));
+
+        MvcResult getResult = mockMvc.perform(get("/discarded"))
+            .andExpect(status().is(200))
+            .andReturn();
+
+        String content = getResult.getResponse().getContentAsString();
+        verify(tweetService, times(1)).listAllDiscardedTweets();
         assertThat(new ObjectMapper().readValue(content, List.class).size()).isEqualTo(1);
     }
 
