@@ -36,7 +36,6 @@ public class TweetController {
         this.tweetService.publishTweet(publishTweetCommand.getPublisher(), publishTweetCommand.getTweet());
     }
 
-
     @GetMapping("/discarded")
     public List<TweetQueryDto> listAllDiscardedTweets() {
         return tweetAdapter.mapFromTweetList(this.tweetService.listAllDiscardedTweets());
