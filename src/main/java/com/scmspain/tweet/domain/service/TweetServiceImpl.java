@@ -62,7 +62,7 @@ public class TweetServiceImpl implements TweetService {
         try {
             this.validator.validate(tweet);
         } catch (ValidationException ex) {
-            throw new IllegalArgumentException(ex);
+            throw new IllegalArgumentException(ex.getMessage());
         }
     }
 }
