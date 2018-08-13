@@ -1,7 +1,7 @@
 package com.scmspain;
 
-import com.scmspain.configuration.InfrastructureConfiguration;
-import com.scmspain.configuration.TweetConfiguration;
+import com.scmspain.tweet.infrastructure.configuration.InfrastructureConfiguration;
+import com.scmspain.tweet.infrastructure.configuration.TweetConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
