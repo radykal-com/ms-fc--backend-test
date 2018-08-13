@@ -34,9 +34,9 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public List<Tweet> listAllActiveTweets() {
+    public List<Tweet> listAllPublishedTweets() {
         this.metricWriter.increment(new Delta<Number>("times-queried-tweets", 1));
-        return repository.findAllActive();
+        return repository.findAllPublished();
     }
 
     @Override

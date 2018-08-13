@@ -27,7 +27,7 @@ public class TweetController {
 
     @GetMapping("/tweet")
     public List<TweetQueryDto> listAllTweets() {
-        return tweetAdapter.mapFromTweetList(this.tweetService.listAllActiveTweets());
+        return tweetAdapter.mapFromTweetList(this.tweetService.listAllPublishedTweets());
     }
 
     @PostMapping("/tweet")

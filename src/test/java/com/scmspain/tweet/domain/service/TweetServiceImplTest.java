@@ -88,8 +88,8 @@ public class TweetServiceImplTest {
     public void shouldListAllActiveTweets() {
         Tweet tweet1 = new Tweet();
         Tweet tweet2 = new Tweet();
-        when(repository.findAllActive()).thenReturn(Arrays.asList(tweet1, tweet2));
-        List<Tweet> result = tweetServiceImpl.listAllActiveTweets();
+        when(repository.findAllPublished()).thenReturn(Arrays.asList(tweet1, tweet2));
+        List<Tweet> result = tweetServiceImpl.listAllPublishedTweets();
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).contains(tweet1, tweet2);
     }

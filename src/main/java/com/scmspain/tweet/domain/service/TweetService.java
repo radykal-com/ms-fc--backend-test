@@ -7,7 +7,7 @@ public interface TweetService {
 
   void publishTweet(String publisher, String content);
 
-  List<Tweet> listAllActiveTweets();
+  List<Tweet> listAllPublishedTweets();
 
   void discardTweet(Long id);
 

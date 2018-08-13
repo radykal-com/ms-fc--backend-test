@@ -63,14 +63,14 @@ public class TweetControllerTest {
 
     @Test
     public void shouldReturnAllPublishedTweets() throws Exception {
-        when(tweetService.listAllActiveTweets()).thenReturn(Arrays.asList(new Tweet()));
+        when(tweetService.listAllPublishedTweets()).thenReturn(Arrays.asList(new Tweet()));
 
         MvcResult getResult = mockMvc.perform(get("/tweet"))
                 .andExpect(status().is(200))
                 .andReturn();
 
         String content = getResult.getResponse().getContentAsString();
-        verify(tweetService, times(1)).listAllActiveTweets();
+        verify(tweetService, times(1)).listAllPublishedTweets();
         assertThat(new ObjectMapper().readValue(content, List.class).size()).isEqualTo(1);
     }
 

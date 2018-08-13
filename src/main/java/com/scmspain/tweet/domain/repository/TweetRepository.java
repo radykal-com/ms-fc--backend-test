@@ -9,7 +9,7 @@ public interface TweetRepository {
 
   Tweet findById(Long id);
 
-  List<Tweet> findAllActive();
+  List<Tweet> findAllPublished();
 
   List<Tweet> findAllDiscarded();
 }

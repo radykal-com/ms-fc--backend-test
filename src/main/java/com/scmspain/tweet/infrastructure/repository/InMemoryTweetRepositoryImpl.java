@@ -27,7 +27,7 @@ public class InMemoryTweetRepositoryImpl implements TweetRepository {
     }
 
     @Override
-    public List<Tweet> findAllActive() {
+    public List<Tweet> findAllPublished() {
         TypedQuery<Tweet> query = this.entityManager.createQuery("SELECT t FROM Tweet t WHERE t.pre2015MigrationStatus<>99 AND t.discarded=false ORDER BY t.id DESC", Tweet.class);
         return query.getResultList();
     }
