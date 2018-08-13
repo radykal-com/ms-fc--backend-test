@@ -1,6 +1,6 @@
 package com.scmspain.tweet.domain.validation;
 
-import com.scmspain.tweet.domain.entities.Tweet;
+import com.scmspain.tweet.domain.model.Tweet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.ValidationException;
@@ -18,7 +18,7 @@ public class TweetLengthValidator implements Validator<Tweet> {
 
   @Override
   public void validate(Tweet tweet)  throws ValidationException {
-    if (countChars(tweet.getTweet()) > MAX_LENGTH) {
+    if (countChars(tweet.getContent()) > MAX_LENGTH) {
       throw new ValidationException(String.format("Tweet must not be greater than %s characters", MAX_LENGTH));
     }
   }

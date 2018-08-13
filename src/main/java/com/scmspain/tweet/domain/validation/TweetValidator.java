@@ -1,6 +1,6 @@
 package com.scmspain.tweet.domain.validation;
 
-import com.scmspain.tweet.domain.entities.Tweet;
+import com.scmspain.tweet.domain.model.Tweet;
 import java.util.List;
 import javax.validation.ValidationException;
 
