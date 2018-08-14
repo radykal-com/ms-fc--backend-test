@@ -1,4 +1,4 @@
-package com.scmspain;
+package com.scmspain.tweet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
