@@ -10,6 +10,9 @@ import javax.transaction.Transactional;
 @Transactional
 public class InMemoryTweetRepositoryImpl implements TweetRepository {
 
+    private static String FIND_ALL_PUBLISHED_QUERY = "SELECT t FROM Tweet t WHERE t.pre2015MigrationStatus<>99 AND t.discarded=false ORDER BY t.id DESC";
+    private static String FIND_ALL_DISCARDED_QUERY = "SELECT t FROM Tweet t WHERE t.pre2015MigrationStatus<>99 AND t.discarded=true ORDER BY t.discardedDate DESC";
+
     private EntityManager entityManager;
 
     public InMemoryTweetRepositoryImpl(EntityManager entityManager) {
@@ -28,13 +31,16 @@ public class InMemoryTweetRepositoryImpl implements TweetRepository {
 
     @Override
     public List<Tweet> findAllPublished() {
-        TypedQuery<Tweet> query = this.entityManager.createQuery("SELECT t FROM Tweet t WHERE t.pre2015MigrationStatus<>99 AND t.discarded=false ORDER BY t.id DESC", Tweet.class);
-        return query.getResultList();
+        return findTweetsByQuery(FIND_ALL_PUBLISHED_QUERY);
     }
 
     @Override
     public List<Tweet> findAllDiscarded() {
-        TypedQuery<Tweet> query = this.entityManager.createQuery("SELECT t FROM Tweet t WHERE t.pre2015MigrationStatus<>99 AND t.discarded=true ORDER BY t.discardedDate DESC", Tweet.class);
-        return query.getResultList();
+        return findTweetsByQuery(FIND_ALL_DISCARDED_QUERY);
+    }
+
+    private List<Tweet> findTweetsByQuery(String query) {
+        TypedQuery<Tweet> typedQuery = entityManager.createQuery(query, Tweet.class);
+        return typedQuery.getResultList();
     }
 }
