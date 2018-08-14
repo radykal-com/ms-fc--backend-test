@@ -3,8 +3,9 @@ package com.scmspain.tweet.infrastructure.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmspain.tweet.domain.model.Tweet;
 import com.scmspain.tweet.infrastructure.configuration.TestConfiguration;
-import com.scmspain.tweet.domain.exception.TweetNotFoundException;
+import com.scmspain.tweet.domain.exception.EntityNotFoundException;
 import com.scmspain.tweet.domain.service.TweetService;
+import com.scmspain.tweet.infrastructure.exception.GlobalExceptionHandler;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,10 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestConfiguration.class)
+@SpringBootTest(classes = {TestConfiguration.class, GlobalExceptionHandler.class })
 public class TweetControllerTest {
+
     @Autowired
     private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @MockBean
@@ -95,7 +98,7 @@ public class TweetControllerTest {
 
     @Test
     public void shouldReturn404IfDiscardingNonExistantTweet() throws Exception {
-        doThrow(TweetNotFoundException.class).when(tweetService).discardTweet(any());
+        doThrow(EntityNotFoundException.class).when(tweetService).discardTweet(any());
         mockMvc.perform(discardTweet())
             .andExpect(status().is(404));
     }

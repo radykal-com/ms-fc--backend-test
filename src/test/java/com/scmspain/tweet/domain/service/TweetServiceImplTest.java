@@ -1,7 +1,7 @@
 package com.scmspain.tweet.domain.service;
 
 import com.scmspain.tweet.domain.model.Tweet;
-import com.scmspain.tweet.domain.exception.TweetNotFoundException;
+import com.scmspain.tweet.domain.exception.EntityNotFoundException;
 import com.scmspain.tweet.domain.repository.TweetRepository;
 import com.scmspain.tweet.domain.validation.Validator;
 import java.util.Arrays;
@@ -88,7 +88,7 @@ public class TweetServiceImplTest {
         verify(metricsService, times(0)).discardedTweets();
     }
 
-    @Test(expected = TweetNotFoundException.class)
+    @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionWhenDiscardingNotExistantTweet() {
         when(repository.findById(ID)).thenReturn(null);
         tweetServiceImpl.discardTweet(ID);

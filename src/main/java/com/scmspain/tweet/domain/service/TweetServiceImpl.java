@@ -1,15 +1,13 @@
 package com.scmspain.tweet.domain.service;
 
 import com.scmspain.tweet.domain.model.Tweet;
-import com.scmspain.tweet.domain.exception.TweetNotFoundException;
+import com.scmspain.tweet.domain.exception.EntityNotFoundException;
 import com.scmspain.tweet.domain.repository.TweetRepository;
 import com.scmspain.tweet.domain.validation.Validator;
 import java.util.Date;
 import java.util.List;
 import javax.validation.ValidationException;
-import org.springframework.stereotype.Service;
 
-@Service
 public class TweetServiceImpl implements TweetService {
 
     private TweetRepository repository;
@@ -39,10 +37,10 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public void discardTweet(Long id) throws TweetNotFoundException {
+    public void discardTweet(Long id) throws EntityNotFoundException {
         Tweet tweet = repository.findById(id);
         if (tweet == null) {
-            throw new TweetNotFoundException(String.format("Could not find any Tweet with id %s",id));
+            throw new EntityNotFoundException(String.format("Could not find any Tweet with id %s",id));
         }
         if (!tweet.getDiscarded()) {
             tweet.setDiscarded(true);
